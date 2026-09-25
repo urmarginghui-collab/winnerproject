@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Winner Project Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F4F6F5; --surface:#FFFFFF; --sunk:#EDF1EE; --ink:#16201B; --muted:#5E6B64; --line:#DDE4DF;
+  --accent:#1F7A55; --up:#16804A; --down:#B93C12;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F1512; --surface:#161F1A; --sunk:#1C2721; --ink:#E4ECE7; --muted:#95A59C; --line:#2A3730;
+    --accent:#4CC08C; --up:#5BD08F; --down:#F08A62;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1512; --surface:#161F1A; --sunk:#1C2721; --ink:#E4ECE7; --muted:#95A59C; --line:#2A3730;
+  --accent:#4CC08C; --up:#5BD08F; --down:#F08A62;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:22px;line-height:1.2;margin:0;font-weight:600}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top label{font-weight:600;font-size:15px}
+select{font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:170px}
+select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:420px}
+th,td{padding:12px 16px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12.5px;font-weight:600;color:var(--muted);background:var(--sunk)}
+tbody tr:last-child td{border-bottom:0}
+td{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px}
+td.name{font-family:var(--sans);font-weight:500}
+.up{color:var(--up);font-weight:600}
+.down{color:var(--down);font-weight:600}
+.zero{color:var(--down)}
+.na{color:var(--muted)}
+.empty{padding:28px 16px;color:var(--muted);text-align:center;font-family:var(--sans);font-size:14px}
+.note{font-size:12.5px;color:var(--muted);margin:0}
+
+/* Daily Trend chart */
+:root{
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --grid:#E6ECE8; --tip-bg:#FFFFFF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+    --grid:#25312B; --tip-bg:#1E2923;
+  }
+}
+:root[data-theme="dark"]{
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  --grid:#25312B; --tip-bg:#1E2923;
+}
+.trend{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+.trend-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.trend-ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#weekSel{min-width:0;font-size:14px;padding:7px 10px}
+h2{font-size:17px;margin:0;font-weight:600}
+.seg{display:inline-flex;background:var(--sunk);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.seg button{font:inherit;font-size:13.5px;border:0;background:transparent;color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.chart-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 14px 12px;position:relative}
+.chart-box{position:relative;width:100%}
+.chart-box > svg{display:block;width:100%;height:auto;overflow:visible}
+.chart-box text{font-family:var(--sans);font-size:11.5px;fill:var(--muted)}
+.chart-empty{padding:40px 12px;text-align:center;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink);cursor:default}
+.legend svg{flex:none}
+.tip{position:absolute;pointer-events:none;background:var(--tip-bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;box-shadow:0 4px 14px rgba(0,0,0,.12);font-size:12.5px;min-width:150px;z-index:2}
+.tip .d{font-weight:600;margin-bottom:4px;color:var(--ink)}
+.tip .r{display:flex;align-items:center;gap:8px;line-height:1.7;color:var(--muted);white-space:nowrap}
+.tip .r svg{flex:none}
+.tip .r b{font-family:var(--mono);color:var(--ink);font-weight:600;min-width:28px;text-align:right}
+.tip .r.hot{color:var(--ink);font-weight:600}
+@media (prefers-reduced-motion: no-preference){ .line{transition:opacity .15s} }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <h1>Daily CSC Monitoring Board</h1>
+  <div class="top">
+    <label for="dateSel">Date:</label>
+    <select id="dateSel"><option>Loading…</option></select>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr>
+        <th>CSC</th>
+        <th id="calledHead">Existing Called</th>
+        <th>Winner Project Total</th>
+        <th>WP Added</th>
+      </tr></thead>
+      <tbody id="body"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+    </table>
+  </div>
+  <p class="note" id="note"></p>
+
+  <section class="trend">
+    <div class="trend-head">
+      <h2>Weekly Trend</h2>
+      <div class="trend-ctrl">
+      <select id="weekSel" aria-label="Choose week"></select>
+      <div class="seg" role="group" aria-label="Chart metric">
+        <button type="button" data-m="called" aria-pressed="true">Existing Called</button>
+        <button type="button" data-m="added" aria-pressed="false">WP Added</button>
+      </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-box" id="chartBox"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const CORE = ['Xinni','Irene','Gracey','Zhitian','Yuting','Evelyn','Sujin'];
+const HIDE = new Set(['Ging Hui','Yiling','Unassigned']);   // kept in the data, not shown
+let snaps = [];
+let userPicked = false;
+
+const fmt = n => Number(n).toLocaleString('en-US');
+const MONTHS = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sept','Oct','Nov','Dec'];
+const pretty = d => { const [y,m,dd] = d.split('-').map(Number); return dd+' '+MONTHS[m-1]+' '+y; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const val = (s,n,k) => { if (k==='wp' && s && s.noWp) return null; return s && s.csc && s.csc[n] ? (s.csc[n][k]||0) : 0; };
+const diff = (a,b) => a==null || b==null ? null : a-b;
+
+function render(){
+  const idx = snaps.findIndex(s => s.date === $('#dateSel').value);
+  const body = $('#body');
+  if (idx < 0){ body.innerHTML = '<tr><td colspan="4" class="empty">No data recorded yet.</td></tr>'; $('#note').textContent=''; return; }
+  const s = snaps[idx], p = snaps[idx-1];
+  const names = new Set(CORE);
+  [s,p].forEach(x => x && Object.keys(x.csc||{}).forEach(n => names.add(n)));
+  const rows = [...names].map(n => ({
+    n,
+    called: p ? val(s,n,'called') - val(p,n,'called') : val(s,n,'called'),
+    wp: val(s,n,'wp'),
+    added: p ? diff(val(s,n,'wp'), val(p,n,'wp')) : null
+  })).filter(r => !HIDE.has(r.n) && (CORE.includes(r.n) || r.wp || r.called || r.added));
+  rows.sort((a,b) => (b.called ?? 0) - (a.called ?? 0) || (b.wp ?? 0) - (a.wp ?? 0));
+  body.innerHTML = rows.map(r =>
+    '<tr><td class="name">'+esc(r.n)+'</td>'+
+    '<td>'+(r.called==null ? '<span class="na">—</span>' : r.called===0 ? '<span class="zero">0</span>' : fmt(r.called))+'</td>'+
+    '<td>'+(r.wp==null ? '<span class="na">—</span>' : fmt(r.wp))+'</td>'+
+    '<td>'+(r.added==null ? '<span class="na">—</span>' : r.added>0 ? '<span class="up">+'+fmt(r.added)+'</span>' : r.added<0 ? '<span class="down">'+fmt(r.added)+'</span>' : '0')+'</td></tr>'
+  ).join('');
+  $('#note').textContent = p
+    ? 'Compared with '+(p.hidden ? 'the start (all zero)' : pretty(p.date))+'.' + (s.noWp ? ' Winner Project numbers were not recorded for this day.' : (p.noWp ? ' WP Added starts from the next day (no Winner Project record for '+pretty(p.date)+').' : ''))
+    : 'First recorded day: Existing Called shows the total checked so far. From the next day it shows only that day\'s new calls.';
+  $('#calledHead').textContent = p ? 'Existing Called' : 'Existing Called (total so far)';
+}
+
+function fillDates(){
+  const sel = $('#dateSel'), cur = sel.value;
+  sel.innerHTML = snaps.filter(s => !s.hidden).reverse().map(s => '<option value="'+s.date+'">'+pretty(s.date)+'</option>').join('') || '<option value="">No dates yet</option>';
+  if (userPicked && snaps.some(s => s.date === cur)) sel.value = cur;
+  else if (snaps.length) sel.value = snaps[snaps.length-1].date;   // latest by default
+  render();
+  drawChart();
+}
+
+$('#dateSel').addEventListener('change', () => { userPicked = true; render(); });
+
+/* ---------- Daily Trend line chart ---------- */
+// Fixed colour per CSC (never by rank).
+const SERIES = [
+  {n:'Xinni',v:'--s1'},{n:'Irene',v:'--s2'},{n:'Gracey',v:'--s3'},{n:'Zhitian',v:'--s4'},
+  {n:'Yuting',v:'--s5'},{n:'Evelyn',v:'--s6'},{n:'Sujin',v:'--s7'}
+];
+let metric = 'called', hotName = null;
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const colorOf = s => getComputedStyle(document.documentElement).getPropertyValue(s.v).trim();
+
+function seriesList(){
+  const names = new Set(SERIES.map(s=>s.n));
+  const extra = [];
+  snaps.forEach(s => Object.keys(s.csc||{}).forEach(n => { if (!names.has(n) && !HIDE.has(n)){ names.add(n); extra.push({n, v: extra.length ? '--muted' : '--s8', dash: extra.length ? '2 3' : ''}); } }));
+  return SERIES.concat(extra);
+}
+function trendData(){
+  const pts = [];                     // one entry per comparable day
+  for (let i=1;i<snaps.length;i++){
+    const s = snaps[i], p = snaps[i-1], row = {date:s.date, v:{}};
+    seriesList().forEach(se => {
+      row.v[se.n] = metric==='called' ? val(s,se.n,'called')-val(p,se.n,'called') : diff(val(s,se.n,'wp'), val(p,se.n,'wp'));
+    });
+    pts.push(row);
+  }
+  return pts;
+}
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const shortDate = d => { const t = new Date(d+'T00:00:00Z'); return DOW[t.getUTCDay()]+' '+t.getUTCDate(); };
+const mondayOf = d => { const t = new Date(d+'T00:00:00Z'); const back = (t.getUTCDay()+6)%7; t.setUTCDate(t.getUTCDate()-back); return t.toISOString().slice(0,10); };
+const plusDays = (d,n) => { const t = new Date(d+'T00:00:00Z'); t.setUTCDate(t.getUTCDate()+n); return t.toISOString().slice(0,10); };
+const weekLabel = mon => { const sun = plusDays(mon,6); const [,m1,d1] = mon.split('-').map(Number), [y2,m2,d2] = sun.split('-').map(Number);
+  return d1+(m1!==m2?' '+MONTHS[m1-1]:'')+' – '+d2+' '+MONTHS[m2-1]+' '+y2; };
+let weekPicked = null;
+function fillWeeks(rows){
+  const sel = $('#weekSel');
+  const weeks = [...new Set(rows.map(r => mondayOf(r.date)))].sort().reverse();
+  sel.hidden = !weeks.length;
+  sel.innerHTML = weeks.map(w => '<option value="'+w+'">'+weekLabel(w)+'</option>').join('');
+  sel.value = weekPicked && weeks.includes(weekPicked) ? weekPicked : (weeks[0] || '');
+  return sel.value;
+}
+
+function drawChart(){
+  const box = $('#chartBox'), legend = $('#legend');
+  box.innerHTML = ''; legend.innerHTML = '';
+  const list = seriesList();
+  // legend (line keys)
+  list.forEach(se => {
+    const item = document.createElement('span'); item.dataset.n = se.n;
+    const k = el('svg',{width:18,height:10,'aria-hidden':'true'});
+    el('line',{x1:1,y1:5,x2:17,y2:5,stroke:colorOf(se),'stroke-width':2.5,'stroke-linecap':'round','stroke-dasharray':se.dash||''},k);
+    item.appendChild(k); item.appendChild(document.createTextNode(se.n));
+    item.addEventListener('pointerenter', () => highlight(se.n));
+    item.addEventListener('pointerleave', () => highlight(null));
+    legend.appendChild(item);
+  });
+  const allRows = trendData();
+  const week = fillWeeks(allRows);
+  if (allRows.length && week){
+    const byDate = Object.fromEntries(allRows.map(r => [r.date, r]));
+    var data = Array.from({length:7}, (_,k) => { const d = plusDays(week,k); return byDate[d] || {date:d, v:{}}; });
+  } else var data = [];
+  const hasVal = data.some(d => list.some(se => d.v[se.n] != null));
+  if (data.some(d => Object.keys(d.v).length) && !hasVal){
+    const e = document.createElement('div'); e.className='chart-empty';
+    const firstWp = snaps.find(s => !s.hidden && !s.noWp);
+    e.textContent = 'WP Added starts the day after the first Winner Project record' + (firstWp ? ' ('+pretty(addDay(firstWp.date))+').' : '.');
+    box.appendChild(e); return;
+  }
+  if (data.length && !data.some(d => Object.keys(d.v).length)){
+    const e = document.createElement('div'); e.className='chart-empty'; e.textContent = 'No data recorded for this week.'; box.appendChild(e); return;
+  }
+  if (!data.length){
+    const e = document.createElement('div'); e.className='chart-empty';
+    e.textContent = snaps.length ? 'The trend starts after the second recorded day ('+(snaps.length? pretty(addDay(snaps[0].date)) : '')+').' : 'No data yet.';
+    box.appendChild(e); return;
+  }
+  const W = Math.max(320, box.clientWidth || 680), H = W < 500 ? 240 : 300;
+  const m = {t:12, r:14, b:28, l:36};
+  const iw = W-m.l-m.r, ih = H-m.t-m.b;
+  const all = data.flatMap(d => list.map(se => d.v[se.n])).filter(v => v != null);
+  const rawHi = Math.max(1,...all), rawLo = Math.min(0,...all);
+  const span = rawHi-rawLo, p10 = Math.max(1, Math.pow(10, Math.floor(Math.log10(span/4))));
+  const step = [1,2,5,10].map(k=>k*p10).find(st => span/st <= 5) || 10*p10;
+  const hi = Math.ceil(rawHi/step)*step, lo = Math.floor(rawLo/step)*step;
+  const x = i => m.l + (data.length===1 ? iw/2 : i*iw/(data.length-1));
+  const y = v => m.t + ih - (v-lo)/(hi-lo)*ih;
+  const svg = el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Daily trend of '+(metric==='called'?'Existing Called':'WP Added')+' per CSC'},box);
+  // grid + y ticks
+  for (let v=lo; v<=hi+1e-9; v+=step){
+    const yy = y(v);
+    el('line',{x1:m.l,x2:W-m.r,y1:yy,y2:yy,stroke: v===0 ? 'var(--muted)' : 'var(--grid)','stroke-width':1,'stroke-opacity': v===0 ? .45 : 1},svg);
+    const t = el('text',{x:m.l-8,y:yy+4,'text-anchor':'end'},svg); t.textContent = fmt(Math.round(v));
+  }
+  // x labels (thin out when crowded)
+  const every = Math.max(1, Math.ceil(data.length / Math.floor(iw/58)));
+  data.forEach((d,i) => { if (i%every && i!==data.length-1) return;
+    const t = el('text',{x:x(i),y:H-8,'text-anchor': data.length===1?'middle': i===0?'start': i===data.length-1?'end':'middle'},svg); t.textContent = shortDate(d.date); });
+  // crosshair
+  const cross = el('line',{y1:m.t,y2:m.t+ih,stroke:'var(--muted)','stroke-width':1,'stroke-opacity':.5,visibility:'hidden'},svg);
+  // lines + dots
+  const gLines = el('g',{},svg);
+  list.forEach(se => {
+    const c = colorOf(se), g = el('g',{class:'line','data-n':se.n},gLines);
+    let dd = '', pen = false;
+    data.forEach((d,i) => { const v = d.v[se.n]; if (v == null){ pen = false; return; } dd += (pen?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1); pen = true; });
+    if (dd.includes('L')) el('path',{d:dd,fill:'none',stroke:c,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round','stroke-dasharray':se.dash||''},g);
+    data.forEach((d,i) => d.v[se.n] != null && el('circle',{cx:x(i),cy:y(d.v[se.n]),r: data.length>14 ? 2.5 : 4,fill:c,stroke:'var(--surface)','stroke-width':2},g));
+  });
+  // hover layer: snap to nearest date, list every CSC; nearest line is emphasised
+  const tip = document.createElement('div'); tip.className='tip'; tip.hidden = true; box.appendChild(tip);
+  const hit = el('rect',{x:m.l-10,y:m.t,width:iw+20,height:ih,fill:'transparent'},svg);
+  function move(ev){
+    const r = svg.getBoundingClientRect(), sx = (ev.clientX-r.left)*W/r.width, sy = (ev.clientY-r.top)*H/r.height;
+    let i = data.length===1 ? 0 : Math.round((sx-m.l)/(iw/(data.length-1))); i = Math.max(0,Math.min(data.length-1,i));
+    const d = data[i];
+    let near = null, best = Infinity;
+    list.forEach(se => { if (d.v[se.n] == null) return; const dist = Math.abs(y(d.v[se.n])-sy); if (dist<best){best=dist; near=se.n;} });
+    highlight(near);
+    cross.setAttribute('x1',x(i)); cross.setAttribute('x2',x(i)); cross.setAttribute('visibility','visible');
+    tip.textContent = '';
+    const h = document.createElement('div'); h.className='d'; h.textContent = pretty(d.date); tip.appendChild(h);
+    list.slice().sort((a,b)=>(d.v[b.n]??-1e9)-(d.v[a.n]??-1e9)).forEach(se => {
+      const row = document.createElement('div'); row.className = 'r'+(se.n===near?' hot':'');
+      const k = el('svg',{width:14,height:8,'aria-hidden':'true'}); el('line',{x1:1,y1:4,x2:13,y2:4,stroke:colorOf(se),'stroke-width':2.5,'stroke-linecap':'round','stroke-dasharray':se.dash?'3 2':''},k);
+      const b = document.createElement('b'); const v = d.v[se.n];
+      b.textContent = v == null ? '—' : metric==='added' && v>0 ? '+'+fmt(v) : fmt(v);
+      row.appendChild(k); row.appendChild(b); row.appendChild(document.createTextNode(se.n));
+      tip.appendChild(row);
+    });
+    tip.hidden = false;
+    const bw = box.clientWidth, px = x(i)*r.width/W, tw = tip.offsetWidth;
+    tip.style.left = (px + 14 + tw > bw ? px - tw - 14 : px + 14) + 'px';
+    tip.style.top = '4px';
+  }
+  hit.addEventListener('pointermove', move);
+  hit.addEventListener('pointerdown', move);
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; cross.setAttribute('visibility','hidden'); highlight(null); });
+  highlight(hotName);
+}
+function highlight(n){
+  hotName = n;
+  document.querySelectorAll('#chartBox .line').forEach(g => { g.style.opacity = !n || g.dataset.n===n ? 1 : .18; if (g.dataset.n===n) g.parentNode.appendChild(g); });
+  document.querySelectorAll('#legend span').forEach(s => { s.style.opacity = !n || s.dataset.n===n ? 1 : .45; });
+}
+const addDay = d => { const t = new Date(d+'T00:00:00Z'); t.setUTCDate(t.getUTCDate()+1); return t.toISOString().slice(0,10); };
+
+$('#weekSel').addEventListener('change', e => { weekPicked = e.target.value; drawChart(); });
+document.querySelector('.seg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  metric = b.dataset.m;
+  document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x===b)));
+  drawChart();
+});
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(drawChart, 150); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', drawChart);
+new MutationObserver(drawChart).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+
+window.setSnaps = list => { snaps = list.filter(Boolean); fillDates(); };
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const app = initializeApp({
+  apiKey: "AIzaSyBESbMRJzht1rVS3dc1KE-wOGHOFMVZoDI",
+  authDomain: "winner-project-monitor.firebaseapp.com",
+  projectId: "winner-project-monitor",
+  storageBucket: "winner-project-monitor.firebasestorage.app",
+  messagingSenderId: "823271327762",
+  appId: "1:823271327762:web:5b3a63f580489450d670cb"
+});
+const db = getFirestore(app);
+onSnapshot(query(collection(db, "snapshots"), orderBy("date", "asc")),
+  snap => window.setSnaps(snap.docs.map(d => d.data())),
+  err => { document.querySelector('#body').innerHTML = '<tr><td colspan="4" class="empty">Could not load data ('+err.code+'). Refresh the page.</td></tr>'; });
+</script>
+</body>
+</html>
