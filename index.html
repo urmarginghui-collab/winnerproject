@@ -50,6 +50,14 @@ td.name{font-family:var(--sans);font-weight:500}
 .na{color:var(--muted)}
 .empty{padding:28px 16px;color:var(--muted);text-align:center;font-family:var(--sans);font-size:14px}
 .note{font-size:12.5px;color:var(--muted);margin:0}
+.upd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.btn{font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.how{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.6}
+.how ol{margin:6px 0 0;padding-left:20px;display:grid;gap:6px}
+.bm{cursor:grab}
 
 /* Daily Trend chart */
 :root{
@@ -97,6 +105,24 @@ h2{font-size:17px;margin:0;font-weight:600}
 
 <div class="wrap">
   <h1>Daily CSC Monitoring Board</h1>
+  <div class="upd">
+    <span id="lastUpd">Loading…</span>
+    <button class="btn" id="reloadBtn" type="button">↻ Reload</button>
+    <button class="btn" id="howBtn" type="button" aria-expanded="false">Update data</button>
+  </div>
+  <div class="how" id="how" hidden>
+    <b>Get the newest numbers from Respond.io and 3CX</b>
+    <ol>
+      <li><b>One time only:</b> drag this button to your Chrome bookmarks bar →
+        <a class="btn primary bm" href="javascript:(async () =&gt; { const SPACE = 158093, WP_LIFECYCLE = 1185426, CALLED_FIELD = &#x27;winner_project_called&#x27;; const KEY = &#x27;AIzaSyBESbMRJzht1rVS3dc1KE-wOGHOFMVZoDI&#x27;, PROJECT = &#x27;winner-project-monitor&#x27;; const DASH = &#x27;https://urmarginghui-collab.github.io/winnerproject/&#x27;; const MAP = {395538:&#x27;Zhitian&#x27;,1097809:&#x27;Zhitian&#x27;,395542:&#x27;Irene&#x27;,1097804:&#x27;Irene&#x27;,448845:&#x27;Xinni&#x27;,1097812:&#x27;Xinni&#x27;,1127755:&#x27;Xinni&#x27;,253698:&#x27;Yuting&#x27;,1097805:&#x27;Yuting&#x27;,1005939:&#x27;Gracey&#x27;,1097814:&#x27;Gracey&#x27;,395536:&#x27;Evelyn&#x27;,1106198:&#x27;Evelyn&#x27;,1015727:&#x27;Sujin&#x27;,1140926:&#x27;Sujin&#x27;,1018205:&#x27;Yiling&#x27;,1097816:&#x27;Yiling&#x27;,279605:&#x27;Ging Hui&#x27;,1097803:&#x27;Ging Hui&#x27;}; const CORE = [&#x27;Xinni&#x27;,&#x27;Yuting&#x27;,&#x27;Zhitian&#x27;,&#x27;Irene&#x27;,&#x27;Gracey&#x27;,&#x27;Evelyn&#x27;,&#x27;Sujin&#x27;,&#x27;Yiling&#x27;]; const toast = (msg, bg) =&gt; { let t = document.getElementById(&#x27;wp-toast&#x27;); if (!t) { t = document.createElement(&#x27;div&#x27;); t.id = &#x27;wp-toast&#x27;; t.style.cssText = &#x27;position:fixed;top:16px;right:16px;z-index:2147483647;padding:14px 18px;border-radius:10px;color:%23fff;font:600 14px system-ui;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:360px;line-height:1.4&#x27;; document.body.appendChild(t); } t.style.background = bg || &#x27;%231F7A55&#x27;; t.textContent = msg; return t; }; if (!/app%5C.respond%5C.io%5C/space%5C/158093%5C/contact/.test(location.href)) { if (confirm(&#x27;WP Refresh works on the Respond.io Contacts page. Open it now? (Then click WP Refresh again.)&#x27;)) location.href = &#x27;https://app.respond.io/space/158093/contact&#x27;; return; } try { toast(&#x27;WP Refresh: counting%E2%80%A6 (about 1 minute)&#x27;, &#x27;%232a78d6&#x27;); const el = [...document.querySelectorAll(&#x27;*&#x27;)].find(e =&gt; e.__vue_app__); const prov = el.__vue_app__._context.provides; let qc; for (const k of Reflect.ownKeys(prov)) { const v = prov[k]; if (v &amp;&amp; v.getQueryCache) qc = v; } let tbl, usersQ; for (let i = 0; i &lt; 20; i++) { const all = qc.getQueryCache().getAll(); tbl = all.find(q =&gt; q.queryKey.includes(&#x27;contacts-table&#x27;)); usersQ = all.find(q =&gt; JSON.stringify(q.queryKey) === &#x27;[&#x27; + SPACE + &#x27;,%22users%22]&#x27; &amp;&amp; q.state.data); if (tbl &amp;&amp; usersQ) break; await new Promise(r =&gt; setTimeout(r, 500)); } if (!tbl || !usersQ) throw new Error(&#x27;Contacts page not ready. Wait a few seconds and click again.&#x27;); const fn = tbl.options.queryFn; const count = async (conds) =&gt; { for (let i = 0; i &lt; 3; i++) { try { const d = await fn({queryKey:[SPACE,&#x27;contacts&#x27;,&#x27;contacts-table&#x27;,&#x27;&#x27;,{$and:conds},null,{page:1,sortBy:&#x27;fullName&#x27;,descending:false,rowsPerPage:1},&#x27;Asia/Kuala_Lumpur&#x27;]}); return d.totalCount; } catch (e) { if (i === 2) throw e; await new Promise(r =&gt; setTimeout(r, 1500)); } } }; const A = id =&gt; ({category:&#x27;contactField&#x27;,field:&#x27;assigneeUserId&#x27;,operator:&#x27;isEqualTo&#x27;,value:String(id)}); const C = {category:&#x27;contactField&#x27;,field:CALLED_FIELD,operator:&#x27;isEqualTo&#x27;,value:true}; const W = {category:&#x27;lifecycle&#x27;,field:&#x27;&#x27;,operator:&#x27;isEqualTo&#x27;,value:WP_LIFECYCLE}; const users = (usersQ.state.data.items || usersQ.state.data); const csc = {}; CORE.forEach(n =&gt; csc[n] = {called:0, wp:0}); let done = 0; for (const u of users) { const c = await count([A(u.id), C]); const w = await count([A(u.id), W]); done++; toast(&#x27;WP Refresh: counting%E2%80%A6 &#x27; + Math.round(done / users.length * 100) + &#x27;%&#x27;, &#x27;%232a78d6&#x27;); if (!c &amp;&amp; !w &amp;&amp; !MAP[u.id]) continue; const name = MAP[u.id] || ((u.fullName || u.firstName || (&#x27;User &#x27; + u.id)).trim() + (u.role === &#x27;ai_agent&#x27; ? &#x27; (AI)&#x27; : &#x27;&#x27;)); csc[name] = csc[name] || {called:0, wp:0}; csc[name].called += c; csc[name].wp += w; } const totals = {called: await count([C]), wp: await count([W])}; const sumC = Object.values(csc).reduce((a,b) =&gt; a + b.called, 0), sumW = Object.values(csc).reduce((a,b) =&gt; a + b.wp, 0); csc[&#x27;Unassigned&#x27;] = {called: totals.called - sumC, wp: totals.wp - sumW}; if (!csc[&#x27;Unassigned&#x27;].called &amp;&amp; !csc[&#x27;Unassigned&#x27;].wp) delete csc[&#x27;Unassigned&#x27;]; const now = new Date(); const date = new Date(now.getTime() + 8 * 3600e3).toISOString().slice(0, 10); const d = {date, takenAt: now.toISOString(), csc, totals}; toast(&#x27;WP Refresh: saving%E2%80%A6&#x27;, &#x27;%232a78d6&#x27;); const a = await (await fetch(&#x27;https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=&#x27; + KEY, {method:&#x27;POST&#x27;, headers:{&#x27;Content-Type&#x27;:&#x27;application/json&#x27;}, body: JSON.stringify({returnSecureToken:true})})).json(); if (!a.idToken) throw new Error(&#x27;Could not sign in to Firebase.&#x27;); const toV = v =&gt; v === null || v === undefined ? {nullValue:null} : typeof v === &#x27;boolean&#x27; ? {booleanValue:v} : typeof v === &#x27;number&#x27; ? (Number.isInteger(v) ? {integerValue:String(v)} : {doubleValue:v}) : typeof v === &#x27;string&#x27; ? {stringValue:v} : {mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,x]) =&gt; [k, toV(x)]))}}; const r = await fetch(&#x27;https://firestore.googleapis.com/v1/projects/&#x27; + PROJECT + &#x27;/databases/(default)/documents/snapshots/&#x27; + date + &#x27;?updateMask.fieldPaths=date&amp;updateMask.fieldPaths=takenAt&amp;updateMask.fieldPaths=csc&amp;updateMask.fieldPaths=totals&#x27;, {method:&#x27;PATCH&#x27;, headers:{&#x27;Content-Type&#x27;:&#x27;application/json&#x27;, &#x27;Authorization&#x27;:&#x27;Bearer &#x27; + a.idToken}, body: JSON.stringify({fields: toV(d).mapValue.fields})}); if (!r.ok) throw new Error(&#x27;Save failed (&#x27; + r.status + &#x27;).&#x27;); const t = toast(&#x27;Updated &#x27; + date + &#x27; %C2%B7 &#x27; + totals.called + &#x27; called %C2%B7 &#x27; + totals.wp + &#x27; Winner Project. Click here to open the dashboard.&#x27;); t.style.cursor = &#x27;pointer&#x27;; t.onclick = () =&gt; window.open(DASH, &#x27;_blank&#x27;); setTimeout(() =&gt; t.remove(), 15000); } catch (e) { toast(&#x27;WP Refresh failed: &#x27; + (e.message || e), &#x27;%23B93C12&#x27;); } })();" title="Drag me to the bookmarks bar">WP Refresh</a></li>
+      <li><b>One time only:</b> also drag this one →
+        <a class="btn primary bm" href="javascript:(async () =&gt; { const DASH = &#x27;https://urmarginghui-collab.github.io/winnerproject/&#x27;; const EXT = {&#x27;1042&#x27;:&#x27;Xinni&#x27;,&#x27;1045&#x27;:&#x27;Irene&#x27;,&#x27;1047&#x27;:&#x27;Zhitian&#x27;,&#x27;1050&#x27;:&#x27;Yuting&#x27;,&#x27;1055&#x27;:&#x27;Gracey&#x27;,&#x27;1056&#x27;:&#x27;Evelyn&#x27;,&#x27;1054&#x27;:&#x27;Sujin&#x27;,&#x27;1057&#x27;:&#x27;Yiling&#x27;,&#x27;1038&#x27;:&#x27;Ging Hui&#x27;}; const DAYS = 7; const toast = (msg, bg) =&gt; { let t = document.getElementById(&#x27;cx-toast&#x27;); if (!t) { t = document.createElement(&#x27;div&#x27;); t.id = &#x27;cx-toast&#x27;; t.style.cssText = &#x27;position:fixed;top:16px;right:16px;z-index:2147483647;padding:14px 18px;border-radius:10px;color:%23fff;font:600 14px system-ui;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:360px;line-height:1.4&#x27;; document.body.appendChild(t); } t.style.background = bg || &#x27;%231F7A55&#x27;; t.textContent = msg; return t; }; if (location.hostname !== &#x27;urklinik-voice.nkhconnect.com&#x27;) { alert(&#x27;3CX Refresh works on the 3CX web client (urklinik-voice.nkhconnect.com). Log in there first, then click 3CX Refresh.&#x27;); return; } const win = window.open(&#x27;about:blank&#x27;, &#x27;_blank&#x27;); try { toast(&#x27;3CX Refresh: reading call records%E2%80%A6&#x27;, &#x27;%232a78d6&#x27;); const tr = await fetch(&#x27;/connect/token&#x27;, {method:&#x27;POST&#x27;, headers:{&#x27;Content-Type&#x27;:&#x27;application/x-www-form-urlencoded&#x27;}, body:&#x27;client_id=Webclient&amp;grant_type=refresh_token&#x27;, credentials:&#x27;include&#x27;}); const tok = (await tr.json()).access_token; if (!tok) throw new Error(&#x27;Please log in to 3CX first.&#x27;); const H = {Authorization: &#x27;Bearer &#x27; + tok}; const todayMYT = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10); const out = {}; for (let k = DAYS - 1; k &gt;= 0; k--) { const d = new Date(todayMYT + &#x27;T00:00:00Z&#x27;); d.setUTCDate(d.getUTCDate() - k); const date = d.toISOString().slice(0, 10); const from = new Date(date + &#x27;T00:00:00+08:00&#x27;).toISOString(), to = new Date(date + &#x27;T23:59:59+08:00&#x27;).toISOString(); let rows = []; for (let skip = 0; skip &lt; 20000; skip += 1000) { const url = %22/xapi/v1/ReportCallLogData/Pbx.GetCallLogData(periodFrom=%22 + from + %22,periodTo=%22 + to + %22,sourceType=0,sourceFilter=&#x27;&#x27;,destinationType=0,destinationFilter=&#x27;&#x27;,callsType=0,callTimeFilterType=0,callTimeFilterFrom=&#x27;0:00:0&#x27;,callTimeFilterTo=&#x27;0:00:0&#x27;,hidePcalls=true)?$top=1000&amp;$skip=%22 + skip; const r = await fetch(url, {headers: H}); if (!r.ok) throw new Error(&#x27;3CX report error &#x27; + r.status); const v = (await r.json()).value || []; rows = rows.concat(v); if (v.length &lt; 1000) break; } const seen = new Set(), calls = {}; let total = 0; for (const x of rows) { if (x.Direction !== &#x27;Outbound&#x27; || seen.has(x.MainCallHistoryId)) continue; seen.add(x.MainCallHistoryId); const name = EXT[String(x.SourceDn)]; if (!name) continue; calls[name] = (calls[name] || 0) + 1; total++; } Object.values(EXT).forEach(n =&gt; { if (!(n in calls)) calls[n] = 0; }); out[date] = {total, csc: calls}; toast(&#x27;3CX Refresh: read &#x27; + date + &#x27; (&#x27; + total + &#x27; calls)%E2%80%A6&#x27;, &#x27;%232a78d6&#x27;); } const url = DASH + &#x27;%23cx=&#x27; + encodeURIComponent(JSON.stringify({takenAt: new Date().toISOString(), days: out})); if (win) win.location.href = url; else location.href = url; const t = toast(&#x27;3CX read. The dashboard is opening to save it%E2%80%A6&#x27;); setTimeout(() =&gt; t.remove(), 8000); } catch (e) { if (win) win.close(); toast(&#x27;3CX Refresh failed: &#x27; + (e.message || e), &#x27;%23B93C12&#x27;); } })();" title="Drag me to the bookmarks bar">3CX Refresh</a></li>
+      <li>Open <a href="https://app.respond.io/space/158093/contact" target="_blank" rel="noopener">Respond.io Contacts</a> (logged in) and click <b>WP Refresh</b>. Wait about 1 minute until it shows <b>Updated</b>.</li>
+      <li>Open <a href="https://urklinik-voice.nkhconnect.com/" target="_blank" rel="noopener">3CX</a> (logged in) and click <b>3CX Refresh</b>. The dashboard opens and saves the call counts by itself.</li>
+      <li>Come back here and press <b>↻ Reload</b>.</li>
+    </ol>
+    <p class="note" style="margin-top:8px">Each press saves today's numbers. Existing Called for a day = the last update of that day − the last update of the day before, so press it once at the end of each working day.</p>
+  </div>
   <div class="top">
     <label for="dateSel">Date:</label>
     <select id="dateSel"><option>Loading…</option></select>
@@ -105,11 +131,12 @@ h2{font-size:17px;margin:0;font-weight:600}
     <table>
       <thead><tr>
         <th>CSC</th>
+        <th>3CX Total Calls</th>
         <th id="calledHead">Existing Called</th>
         <th>Winner Project Total</th>
         <th>WP Added</th>
       </tr></thead>
-      <tbody id="body"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+      <tbody id="body"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
     </table>
   </div>
   <p class="note" id="note"></p>
@@ -149,7 +176,7 @@ const diff = (a,b) => a==null || b==null ? null : a-b;
 function render(){
   const idx = snaps.findIndex(s => s.date === $('#dateSel').value);
   const body = $('#body');
-  if (idx < 0){ body.innerHTML = '<tr><td colspan="4" class="empty">No data recorded yet.</td></tr>'; $('#note').textContent=''; return; }
+  if (idx < 0){ body.innerHTML = '<tr><td colspan="5" class="empty">No data recorded yet.</td></tr>'; $('#note').textContent=''; return; }
   const s = snaps[idx], p = snaps[idx-1];
   const names = new Set(CORE);
   [s,p].forEach(x => x && Object.keys(x.csc||{}).forEach(n => names.add(n)));
@@ -157,11 +184,13 @@ function render(){
     n,
     called: p ? val(s,n,'called') - val(p,n,'called') : val(s,n,'called'),
     wp: val(s,n,'wp'),
-    added: p ? diff(val(s,n,'wp'), val(p,n,'wp')) : null
+    added: p ? diff(val(s,n,'wp'), val(p,n,'wp')) : null,
+    cx: cxBy[s.date] && cxBy[s.date].csc ? (cxBy[s.date].csc[n] ?? 0) : null
   })).filter(r => !HIDE.has(r.n) && (CORE.includes(r.n) || r.wp || r.called || r.added));
   rows.sort((a,b) => (b.called ?? 0) - (a.called ?? 0) || (b.wp ?? 0) - (a.wp ?? 0));
   body.innerHTML = rows.map(r =>
     '<tr><td class="name">'+esc(r.n)+'</td>'+
+    '<td>'+(r.cx==null ? '<span class="na">—</span>' : fmt(r.cx))+'</td>'+
     '<td>'+(r.called==null ? '<span class="na">—</span>' : r.called===0 ? '<span class="zero">0</span>' : fmt(r.called))+'</td>'+
     '<td>'+(r.wp==null ? '<span class="na">—</span>' : fmt(r.wp))+'</td>'+
     '<td>'+(r.added==null ? '<span class="na">—</span>' : r.added>0 ? '<span class="up">+'+fmt(r.added)+'</span>' : r.added<0 ? '<span class="down">'+fmt(r.added)+'</span>' : '0')+'</td></tr>'
@@ -343,23 +372,60 @@ let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTime
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', drawChart);
 new MutationObserver(drawChart).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
 
-window.setSnaps = list => { snaps = list.filter(Boolean); fillDates(); };
+let cxBy = {};
+window.setSnaps = list => { list = list.filter(Boolean);
+  cxBy = Object.fromEntries(list.filter(x => x.cx).map(x => [x.date, x.cx]));
+  snaps = list.filter(x => x.csc); fillDates();
+  const last = snaps.filter(x => !x.hidden).at(-1);
+  document.getElementById('lastUpd').textContent = last ? 'Last updated ' + new Date(last.takenAt).toLocaleString('en-GB', {timeZone:'Asia/Kuala_Lumpur', day:'numeric', month:'short', hour:'numeric', minute:'2-digit'}) : 'No data yet';
+};
+document.getElementById('howBtn').addEventListener('click', e => { const h = document.getElementById('how'); h.hidden = !h.hidden; e.currentTarget.setAttribute('aria-expanded', String(!h.hidden)); });
+document.querySelectorAll('.bm').forEach(b => b.addEventListener('click', e => { e.preventDefault(); alert('Drag this button to your bookmarks bar. Then click it on the Respond.io / 3CX page.'); }));
 </script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const app = initializeApp({
-  apiKey: "AIzaSyBESbMRJzht1rVS3dc1KE-wOGHOFMVZoDI",
-  authDomain: "winner-project-monitor.firebaseapp.com",
-  projectId: "winner-project-monitor",
-  storageBucket: "winner-project-monitor.firebasestorage.app",
-  messagingSenderId: "823271327762",
-  appId: "1:823271327762:web:5b3a63f580489450d670cb"
-});
-const db = getFirestore(app);
-onSnapshot(query(collection(db, "snapshots"), orderBy("date", "asc")),
-  snap => window.setSnaps(snap.docs.map(d => d.data())),
-  err => { document.querySelector('#body').innerHTML = '<tr><td colspan="4" class="empty">Could not load data ('+err.code+'). Refresh the page.</td></tr>'; });
+<script>
+// Read snapshots from Firestore (REST). Reloads every minute and when the tab comes back into view.
+(function(){
+  const URL_ = 'https://firestore.googleapis.com/v1/projects/winner-project-monitor/databases/(default)/documents/snapshots?pageSize=1000&key=AIzaSyBESbMRJzht1rVS3dc1KE-wOGHOFMVZoDI';
+  const fromV = v => 'nullValue' in v ? null : 'booleanValue' in v ? v.booleanValue : 'integerValue' in v ? Number(v.integerValue)
+    : 'doubleValue' in v ? v.doubleValue : 'stringValue' in v ? v.stringValue
+    : 'mapValue' in v ? Object.fromEntries(Object.entries(v.mapValue.fields || {}).map(([k,x]) => [k, fromV(x)])) : null;
+  let last = '';
+  async function load(){
+    try {
+      const r = await fetch(URL_, {cache:'no-store'});
+      if (!r.ok) throw new Error(r.status);
+      const j = await r.json();
+      const list = (j.documents || []).map(d => Object.assign({date: d.name.split('/').pop()}, fromV({mapValue:{fields:d.fields}}))).sort((a,b) => a.date < b.date ? -1 : 1);
+      const sig = JSON.stringify(list);
+      if (sig !== last){ last = sig; window.setSnaps(list); }
+    } catch(e){
+      if (!last) document.querySelector('#body').innerHTML = '<tr><td colspan="5" class="empty">Could not load data. Check your internet and refresh the page.</td></tr>';
+    }
+  }
+  async function saveCxFromHash(){
+    if (!location.hash.startsWith('#cx=')) return;
+    let payload; try { payload = JSON.parse(decodeURIComponent(location.hash.slice(4))); } catch(e){ return; }
+    history.replaceState(null, '', location.pathname);
+    const note = document.getElementById('lastUpd'); note.textContent = 'Saving 3CX calls…';
+    try {
+      const KEY = 'AIzaSyBESbMRJzht1rVS3dc1KE-wOGHOFMVZoDI';
+      const a = await (await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + KEY, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({returnSecureToken:true})})).json();
+      const toV = v => typeof v === 'number' ? {integerValue:String(Math.round(v))} : typeof v === 'string' ? {stringValue:v} : {mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,x]) => [k, toV(x)]))}};
+      let n = 0;
+      for (const [date, day] of Object.entries(payload.days || {})){
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+        const csc = {}; for (const [k,v] of Object.entries(day.csc || {})) if (typeof v === 'number') csc[String(k).slice(0,40)] = v;
+        const r = await fetch('https://firestore.googleapis.com/v1/projects/winner-project-monitor/databases/(default)/documents/snapshots/' + date + '?updateMask.fieldPaths=cx', {method:'PATCH', headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + a.idToken}, body: JSON.stringify({fields:{cx: toV({takenAt: String(payload.takenAt || new Date().toISOString()), total: Number(day.total) || 0, csc})}})});
+        if (r.ok) n++;
+      }
+      alert('3CX calls saved for ' + n + ' days.');
+    } catch(e){ alert('Could not save 3CX calls. Please try 3CX Refresh again.'); }
+  }
+  saveCxFromHash().then(load);
+  setInterval(load, 60000);
+  document.getElementById('reloadBtn').addEventListener('click', async e => { const b = e.currentTarget; b.textContent = 'Loading…'; await load(); b.textContent = '↻ Reload'; });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+})();
 </script>
 </body>
 </html>
