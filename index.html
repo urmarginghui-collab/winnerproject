@@ -186,7 +186,7 @@ function render(){
     wp: val(s,n,'wp'),
     added: p ? diff(val(s,n,'wp'), val(p,n,'wp')) : null,
     cx: cxBy[s.date] && cxBy[s.date].csc ? (cxBy[s.date].csc[n] ?? 0) : null
-  })).filter(r => !HIDE.has(r.n) && (CORE.includes(r.n) || r.wp || r.called || r.added));
+  })).filter(r => CORE.includes(r.n));   // only the 7 team CSCs
   rows.sort((a,b) => (b.called ?? 0) - (a.called ?? 0) || (b.wp ?? 0) - (a.wp ?? 0));
   body.innerHTML = rows.map(r =>
     '<tr><td class="name">'+esc(r.n)+'</td>'+
@@ -226,7 +226,7 @@ const colorOf = s => getComputedStyle(document.documentElement).getPropertyValue
 function seriesList(){
   const names = new Set(SERIES.map(s=>s.n));
   const extra = [];
-  snaps.forEach(s => Object.keys(s.csc||{}).forEach(n => { if (!names.has(n) && !HIDE.has(n)){ names.add(n); extra.push({n, v: extra.length ? '--muted' : '--s8', dash: extra.length ? '2 3' : ''}); } }));
+  [].forEach(s => Object.keys(s.csc||{}).forEach(n => { if (!names.has(n) && !HIDE.has(n)){ names.add(n); extra.push({n, v: extra.length ? '--muted' : '--s8', dash: extra.length ? '2 3' : ''}); } }));
   return SERIES.concat(extra);
 }
 function trendData(){
