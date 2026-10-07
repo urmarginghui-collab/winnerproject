@@ -161,8 +161,9 @@ h2{font-size:17px;margin:0;font-weight:600}
 
 <script>
 const $ = s => document.querySelector(s);
-const CORE = ['Xinni','Irene','Gracey','Zhitian','Yuting','Evelyn','Sujin'];
-const HIDE = new Set(['Ging Hui','Yiling','Unassigned']);   // kept in the data, not shown
+const CORE = ['Xinni','Irene','Gracey','Zhitian','Yuting','Evelyn','Sujin','Ging Hui'];
+const HIDE = new Set(['Yiling','Unassigned']);
+const label = n => n === 'Ging Hui' ? 'Ginghui' : n;   // kept in the data, not shown
 let snaps = [];
 let userPicked = false;
 
@@ -189,7 +190,7 @@ function render(){
   })).filter(r => CORE.includes(r.n));   // only the 7 team CSCs
   rows.sort((a,b) => (b.called ?? 0) - (a.called ?? 0) || (b.wp ?? 0) - (a.wp ?? 0));
   body.innerHTML = rows.map(r =>
-    '<tr><td class="name">'+esc(r.n)+'</td>'+
+    '<tr><td class="name">'+esc(label(r.n))+'</td>'+
     '<td>'+(r.cx==null ? '<span class="na">—</span>' : fmt(r.cx))+'</td>'+
     '<td>'+(r.called==null ? '<span class="na">—</span>' : r.called===0 ? '<span class="zero">0</span>' : fmt(r.called))+'</td>'+
     '<td>'+(r.wp==null ? '<span class="na">—</span>' : fmt(r.wp))+'</td>'+
@@ -216,7 +217,7 @@ $('#dateSel').addEventListener('change', () => { userPicked = true; render(); })
 // Fixed colour per CSC (never by rank).
 const SERIES = [
   {n:'Xinni',v:'--s1'},{n:'Irene',v:'--s2'},{n:'Gracey',v:'--s3'},{n:'Zhitian',v:'--s4'},
-  {n:'Yuting',v:'--s5'},{n:'Evelyn',v:'--s6'},{n:'Sujin',v:'--s7'}
+  {n:'Yuting',v:'--s5'},{n:'Evelyn',v:'--s6'},{n:'Sujin',v:'--s7'},{n:'Ging Hui',v:'--s8'}
 ];
 let metric = 'called', hotName = null;
 const NS = 'http://www.w3.org/2000/svg';
@@ -265,7 +266,7 @@ function drawChart(){
     const item = document.createElement('span'); item.dataset.n = se.n;
     const k = el('svg',{width:18,height:10,'aria-hidden':'true'});
     el('line',{x1:1,y1:5,x2:17,y2:5,stroke:colorOf(se),'stroke-width':2.5,'stroke-linecap':'round','stroke-dasharray':se.dash||''},k);
-    item.appendChild(k); item.appendChild(document.createTextNode(se.n));
+    item.appendChild(k); item.appendChild(document.createTextNode(label(se.n)));
     item.addEventListener('pointerenter', () => highlight(se.n));
     item.addEventListener('pointerleave', () => highlight(null));
     legend.appendChild(item);
@@ -341,7 +342,7 @@ function drawChart(){
       const k = el('svg',{width:14,height:8,'aria-hidden':'true'}); el('line',{x1:1,y1:4,x2:13,y2:4,stroke:colorOf(se),'stroke-width':2.5,'stroke-linecap':'round','stroke-dasharray':se.dash?'3 2':''},k);
       const b = document.createElement('b'); const v = d.v[se.n];
       b.textContent = v == null ? '—' : metric==='added' && v>0 ? '+'+fmt(v) : fmt(v);
-      row.appendChild(k); row.appendChild(b); row.appendChild(document.createTextNode(se.n));
+      row.appendChild(k); row.appendChild(b); row.appendChild(document.createTextNode(label(se.n)));
       tip.appendChild(row);
     });
     tip.hidden = false;
